@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+    </ul>
+</form>
+
+<script>
+  const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  let citiesData
+  const fetchData = async () => {
+    const response = await fetch(endpoint)
+    citiesData = await response.json()
+  }
+  fetchData()
+
+  const formatWithSpan = (fullWord, searchWord) => {
+    const idx = fullWord.toLowerCase().indexOf(searchWord)
+    if (idx !== -1)
+      return fullWord.slice(0, idx) + '<span>' + fullWord.slice(idx, searchWord.length + idx) + '</span>' + fullWord.slice(idx + searchWord.length, fullWord.length)
+    return fullWord
+  }
+
+  const formatPopulation = (numString) => {
+    numString = numString.split('').reverse().join('')
+    if (numString.length > 3)
+      numString = numString.slice(0,3) + ',' + numString.slice(3, numString.length)
+    if (numString.length > 7)
+      numString = numString.slice(0,7) + ',' + numString.slice(7, numString.length)
+    return numString.split('').reverse().join('')
+  }
+
+  const input = document.querySelector('.search')
+  const citiesList = document.querySelector('.suggestions')
+
+  input.addEventListener('input', (focusEvent) => {
+
+      const searchWord = focusEvent.target.value.trim().toLowerCase()
+
+      if (searchWord === "") {
+        citiesList.innerHTML = '<li>Filter for a city</li><li>or a state</li>'
+        return
+      }
+
+      const foundCities = citiesData.filter(({city, state}) => city.toLowerCase().includes(searchWord) || state.toLowerCase().includes(searchWord))
+      citiesList.innerHTML = ''
+      foundCities.forEach(({city, state, population}) => {
+        city = formatWithSpan(city, searchWord)
+        state = formatWithSpan(state, searchWord)
+        population = formatPopulation(population)
+        const liElement = document.createElement('li')
+        liElement.innerHTML = `<span>${city}, ${state}</span><span>${population}</span>`
+        citiesList.appendChild(liElement)
+      })
+
+    })
+
+
+</script>
+</body>
+</html>
