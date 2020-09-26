@@ -7,6 +7,15 @@
 </head>
 <body>
 <script>
+  const keysSequence = []
+  window.addEventListener('keydown', (e) => {
+    keysSequence.push(e.code)
+    if (keysSequence.length === 11) {
+      if (keysSequence.join(' ') === 'ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight KeyB KeyA Enter')
+        console.log('YYYEEEEEEEAAAAHHH!!!')
+      keysSequence.shift()
+    }
+  })
 </script>
 </body>
 </html>
